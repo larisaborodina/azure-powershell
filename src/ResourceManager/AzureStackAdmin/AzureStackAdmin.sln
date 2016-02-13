@@ -16,36 +16,73 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands.AzureStackAdmin.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands.AzureStackAdmin.Test.Common", "Commands.AzureStackAdmin.Test\Common\Commands.AzureStackAdmin.Test.Common.csproj", "{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands.ScenarioTests.ResourceManager.Common", "..\Common\Commands.ScenarioTests.ResourceManager.Common\Commands.ScenarioTests.ResourceManager.Common.csproj", "{3436A126-EDC9-4060-8952-9A1BE34CDD95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Framework", "..\..\..\..\hydra-specs-pr\Test.Framework\Test.Framework.csproj", "{F144A258-3C38-447A-993E-967F74A1A76C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpRecorder", "..\..\..\..\hydra-specs-pr\Test.Framework\HttpRecorder\HttpRecorder.csproj", "{9E5CB6E6-92AF-464A-BD30-E848D94ED490}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		ReleaseSigned|Any CPU = ReleaseSigned|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{3819D8A7-C62C-4C47-8DDD-0332D9CE1252}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
 		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{142D7B0B-388A-4CEB-A228-7F6D423C5C2E}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
 		{5EE72C53-1720-4309-B54B-5FB79703195F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EE72C53-1720-4309-B54B-5FB79703195F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EE72C53-1720-4309-B54B-5FB79703195F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EE72C53-1720-4309-B54B-5FB79703195F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EE72C53-1720-4309-B54B-5FB79703195F}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{5EE72C53-1720-4309-B54B-5FB79703195F}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
 		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{0B02390C-8AA9-4D99-8AA8-2A9D2D39682F}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
 		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{080B0477-7E52-4455-90AB-23BD13D1B1CE}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
 		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.ReleaseSigned|Any CPU.ActiveCfg = Release|Any CPU
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95}.ReleaseSigned|Any CPU.Build.0 = Release|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.ReleaseSigned|Any CPU.ActiveCfg = ReleaseSigned|Any CPU
+		{F144A258-3C38-447A-993E-967F74A1A76C}.ReleaseSigned|Any CPU.Build.0 = ReleaseSigned|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.ReleaseSigned|Any CPU.ActiveCfg = ReleaseSigned|Any CPU
+		{9E5CB6E6-92AF-464A-BD30-E848D94ED490}.ReleaseSigned|Any CPU.Build.0 = ReleaseSigned|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,5 +90,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{080B0477-7E52-4455-90AB-23BD13D1B1CE} = {047B121A-8B6F-48C5-9D72-BA3B434E8B72}
 		{FE34F78C-E6EC-448C-B675-DF9D9201A4E7} = {047B121A-8B6F-48C5-9D72-BA3B434E8B72}
+		{3436A126-EDC9-4060-8952-9A1BE34CDD95} = {047B121A-8B6F-48C5-9D72-BA3B434E8B72}
 	EndGlobalSection
 EndGlobal

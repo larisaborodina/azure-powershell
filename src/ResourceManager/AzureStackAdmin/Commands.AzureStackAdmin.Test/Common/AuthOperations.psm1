@@ -7,9 +7,6 @@
         [String] $AzureStackMachineName,
 
         [Parameter(Mandatory=$true)]
-        [PSCredential] $Credential,
-
-        [Parameter(Mandatory=$true)]
         [String] $ArmEndpoint,
 
         [Parameter(Mandatory=$true)]
@@ -44,24 +41,12 @@
 
     $isAad = $PSCmdlet.ParameterSetName -eq "AadEnvironment"
     $azStackPowershellGuid = "0a7bdc5c-7b57-40be-9939-d4c5fc7cd417"
-
-    # Get authentication token
-    if ($isAad)
-    {
-        $authEndPoint="$AadLoginUri$AadTenantId/oauth2"
-        Set-AzureStackWithAadEnvironment -AzureStackMachineName $AzureStackMachineName -ArmEndpoint $ArmEndpoint -GalleryEndpoint $GalleryEndpoint -AadGraphUri $AadGraphUri -AadLoginUri $AadLoginUri -AadTenantId $AadTenantId -AadApplicationId $AadApplicationId  -Credential $Credential 
-        $token = Get-AzureStackToken -Authority $authEndPoint -AadTenantId $AadTenantId -Resource $AadApplicationId -ClientId $azStackPowershellGuid -Credential $Credential -Verbose
-    }
-    else
-    {
-        $token = Get-AzureStackToken -Authority $WindowsAuthEndpoint -Credential $Credential -Verbose -ErrorAction Stop
-    }
-
-    # Get admin subscription from frontdoor
-    $adminSubscription = Invoke-RestMethod -Method GET -URI ($ArmEndpoint + "subscriptions?api-version=2014-04-01-preview") -Headers @{Authorization=("Bearer {0}" -f $token)}
-    $adminSubscriptionId = $adminSubscription.Value[0].SubscriptionID
-
-    $location =  Get-DefaultLocation -AdminUri $ArmEndpoint -SubscriptionId $adminSubscriptionId -Token $token
+    $adminSubscription = Get-AzureRmSubscription -SubscriptionName "Default Provider Subscription" 
+    $adminSubscriptionId = $adminSubscription.SubscriptionId
+    Set-AzureRmContext -SubscriptionId $adminSubscriptionId
+    
+	$locations = Get-AzureRMManagedLocation 
+    $location =  $locations[0].Name
 
     $global:AzureStackConfig = [PSCustomObject]@{
                     AzureStackMachineName = $AzureStackMachineName

@@ -3,6 +3,10 @@
 //------------------------------------------------------------
 
 using Microsoft.Azure.Common.Authentication;
+using Microsoft.Azure.Gallery;
+using Microsoft.Azure.Management.Authorization;
+using Microsoft.Azure.Management.Resources;
+using Microsoft.Azure.Subscriptions;
 using Microsoft.Azure.Test;
 using Microsoft.AzureStack.Management;
 using Microsoft.WindowsAzure.Commands.Common.Test.Mocks;
@@ -12,12 +16,9 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Configuration;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
-    using System.Management.Automation;
 
     public sealed class AzStackTestRunner
     {
@@ -25,7 +26,19 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
         private EnvironmentSetupHelper helper;
         private CSMTestEnvironmentFactory armTestEnvironmentFactory;
 
-        private AzureStackClient azureStackClient;
+        public AzureStackClient azureStackClient;
+
+
+        public ResourceManagementClient ResourceManagementClient { get; private set; }
+
+        public SubscriptionClient SubscriptionClient { get; private set; }
+
+        public GalleryClient GalleryClient { get; private set; }
+
+        ////public EventsClient EventsClient { get; private set; }
+
+        public AuthorizationManagementClient AuthorizationManagementClient { get; private set; }
+
 
         public static AzStackTestRunner NewInstance
         {
@@ -47,21 +60,14 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             modules = new List<string>();
             bool aadEnvironement = Convert.ToBoolean(ReadAppSettings("AadEnvironment"), CultureInfo.InvariantCulture);
 
-            if (aadEnvironement)
-            {
-                modules.Add(@"C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ResourceManager\AzureResourceManager\AzureRm.Profile\AzureRm.Profile.psd1");
-                modules.Add(@"C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ResourceManager\AzureResourceManager\AzureRM.AzureStackAdmin\AzureRM.AzureStackAdmin.psd1");
-                modules.Add(@"C:\Program Files (x86)\Microsoft SDKs\Azure\PowerShell\ResourceManager\AzureResourceManager\AzureRM.Resources\AzureRM.Resources.psd1");
-            }
-
             // The modules are deployed to the test run directory with the test settings file
-            modules.Add(@".\Assert.psm1");
-            modules.Add(@".\GlobalVariables.psm1");
-            modules.Add(@".\AuthOperations.psm1");
-            modules.Add(@".\CommonOperations.psm1");
-            modules.Add(@".\ArmOperations.psm1");
-            modules.Add(@".\SqlOperations.psm1");
-            modules.Add(@".\Utilities.psm1");
+            modules.Add(@"AssertResourceExistence.psm1");
+            modules.Add(@"GlobalVariables.psm1");
+            modules.Add(@"AuthOperations.psm1");
+            modules.Add(@"CommonOperations.psm1");
+            modules.Add(@"ArmOperations.psm1");
+            modules.Add(@"SqlOperations.psm1");
+            modules.Add(@"Utilities.psm1");
             
             return modules;
         }
@@ -69,9 +75,7 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
         private string[] SetupAzureStackEnvironment(string testScript)
         {
             List<string> scripts =new List<string>();
-            string azureStackMachine = ReadAppSettings("AzureStackMachineName");
-            string defaultAdminPassword = ReadAppSettings("DefaultAdminPassword");
-            string defaultAdminUser = ReadAppSettings("DefaultAdminUser");
+            string azureStackMachine = "azurestack";
             bool aadEnvironment = Convert.ToBoolean(ReadAppSettings("AadEnvironment"), CultureInfo.InvariantCulture);
             string aadTenantId = ReadAppSettings("AadTenantId", mandatory: false);
             string aadApplicationId = ReadAppSettings("AadApiApplicationId", mandatory: false);
@@ -80,19 +84,13 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             string aadGraphUri = ReadAppSettings("AadGraphUri", mandatory: false);
             string aadLoginuri = ReadAppSettings("AadLoginUri", mandatory: false);
             
-            string adminUserNamePs;
-            string adminPasswordPs;
             string setupAzureStackEnvironmentPs;
-
-            adminUserNamePs = "$adminUsername=\"" + defaultAdminUser + "\"";
-            adminPasswordPs = "$adminPassword =  ConvertTo-SecureString -String \"" + defaultAdminPassword + "\" -AsPlainText -Force";
-            string credentialPs = "$credential = New-Object System.Management.Automation.PSCredential($adminUsername, $adminPassword)";
 
             if (aadEnvironment)
             { 
                 setupAzureStackEnvironmentPs = string.Format(
                     CultureInfo.InvariantCulture,
-                    "Set-AzureStackEnvironment -AzureStackMachineName {0} -Credential $credential -AadTenantId {1} -AadApplicationId {2} -ArmEndpoint {3} -GalleryEndpoint {4} -AadGraphUri {5} -AadLoginUri {6}",
+                    "Set-AzureStackEnvironment -AzureStackMachineName {0} -AadTenantId {1} -AadApplicationId {2} -ArmEndpoint {3} -GalleryEndpoint {4} -AadGraphUri {5} -AadLoginUri {6}",
                     azureStackMachine,
                     aadTenantId,
                     aadApplicationId,
@@ -104,15 +102,12 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             }
             else
             {
-                setupAzureStackEnvironmentPs = "Set-AzureStackEnvironment -AzureStackMachineName " + azureStackMachine + " -Credential $credential";
+                setupAzureStackEnvironmentPs = "Set-AzureStackEnvironment -AzureStackMachineName " + azureStackMachine;
             }
 
             // TODO: Remove Self Signed Cert when ready
             string selfSignedCertPs = "Ignore-SelfSignedCert";
 
-            scripts.Add(adminUserNamePs);
-            scripts.Add(adminPasswordPs);
-            scripts.Add(credentialPs);
             scripts.Add(selfSignedCertPs);
             scripts.Add(setupAzureStackEnvironmentPs);
             
@@ -135,24 +130,6 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             return null;
         }
 
-        //private void SetupPowerShellModules(System.Management.Automation.PowerShell powershell)
-        //{
-        //    powershell.AddScript(string.Format(CultureInfo.InvariantCulture, "cd \"{0}\"", Environment.CurrentDirectory));
-
-        //    powershell.AddScript("$VerbosePreference='SilentlyContinue'");
-
-        //    foreach (string moduleName in this.Modules)
-        //    {
-        //        powershell.AddScript(string.Format(CultureInfo.InvariantCulture, "Import-Module \"{0}\" -Force -ErrorAction Stop", moduleName));
-        //    }
-
-        //    powershell.AddScript("$VerbosePreference='Continue'");
-        //    powershell.AddScript("$DebugPreference='Continue'");
-        //    powershell.AddScript("$ErrorActionPreference='Stop'");
-        //    powershell.AddScript("$ProgressPreference='SilentlyContinue'");
-        //}
-
-
         public void RunPsTest(string testScript)
         {
             var callingClassType = TestUtilities.GetCallingClass(2);
@@ -167,7 +144,6 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
                 callingClassType,
                 mockName);
         }
-
 
         public void RunPsTestWorkflow(
            Func<string[]> scriptBuilder,
@@ -223,12 +199,18 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             }
         }
 
-
         private void SetupManagementClients()
         {
+            ResourceManagementClient = GetResourceManagementClient();
+            SubscriptionClient = GetSubscriptionClient();
+            GalleryClient = GetGalleryClient();
+            AuthorizationManagementClient = this.GetAuthorizationManagementClient();
+            ////var eventsClient = GetEventsClient();
+            //NetworkManagementClient = this.GetNetworkManagementClientClient(context);
+
             azureStackClient = TestBase.GetServiceClient<AzureStackClient>(this.armTestEnvironmentFactory);
 
-            this.SetupManagementClients(azureStackClient);
+            this.SetupManagementClients(ResourceManagementClient, SubscriptionClient, GalleryClient, AuthorizationManagementClient, azureStackClient);
         }
 
         /// <summary>
@@ -240,43 +222,26 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             AzureSession.ClientFactory = new MockClientFactory(initializedManagementClients);
         }
 
+        private ResourceManagementClient GetResourceManagementClient()
+        {
+            return TestBase.GetServiceClient<ResourceManagementClient>(this.armTestEnvironmentFactory);
+        }
 
-        //public virtual Collection<PSObject> RunPowerShellTest(params string[] scripts)
-        //{
-        //    using (var powershell = System.Management.Automation.PowerShell.Create())
-        //    {
-        //        this.SetupPowerShellModules(powershell);
-        //        this.SetupAzureStackEnvironment(powershell);
+        private GalleryClient GetGalleryClient()
+        {
+            return TestBase.GetServiceClient<GalleryClient>(this.armTestEnvironmentFactory);
+        }
 
-        //        Collection<PSObject> output = null;
-        //        for (int i = 0; i < scripts.Length; ++i)
-        //        {
-        //            Console.WriteLine(scripts[i]);
-        //            powershell.AddScript(scripts[i]);
-        //        }
+        private SubscriptionClient GetSubscriptionClient()
+        {
+            return TestBase.GetServiceClient<SubscriptionClient>(this.armTestEnvironmentFactory);
+        }
 
-        //        try
-        //        {
-        //            output = powershell.Invoke();
+        private AuthorizationManagementClient GetAuthorizationManagementClient()
+        {
+            return TestBase.GetServiceClient<AuthorizationManagementClient>(this.armTestEnvironmentFactory);
+        }
 
-        //            if (powershell.Streams.Error.Count > 0)
-        //            {
-        //                throw new RuntimeException(
-        //                    "Test failed due to a non-empty error stream, check the error stream in the test log for more details.");
-        //            }
 
-        //            return output;
-        //        }
-        //        catch (Exception powershellException)
-        //        {
-        //            powershell.LogPowerShellException(powershellException);
-        //            throw;
-        //        }
-        //        finally
-        //        {
-        //            powershell.LogPowerShellResults(output);
-        //        }
-        //    }
-        //}
     }
 }

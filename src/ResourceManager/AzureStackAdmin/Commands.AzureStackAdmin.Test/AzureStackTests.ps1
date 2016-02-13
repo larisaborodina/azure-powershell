@@ -9,7 +9,7 @@
 .EXAMPLE
     This example creates the subscription  with a new plan and offer. It does not delete the created resources
     Test-TenantSubscription -SubscriptionUser "azurestackmachine\tenantuser1" -DoNotDelete
-.EXAMPLET
+.EXAMPLE
     This example creates the reseller subscription  with a new plan and offer. It deletes the created resources as well
     Test-TenantSubscription -Services @("Microsoft.Subscriptions") -SubscriptionUser "azurestackmachine\tenantuser1"
 .NOTES
@@ -20,14 +20,13 @@ function Test-TenantSubscription
     param
     (
         # Specifies the user name for the subscription
-        [Parameter(Mandatory=$true)]
-        [String] $SubscriptionUser,
+        [String] $SubscriptionUser ="user@contoso.com",
 
-        [String] $OfferName,
+        [String] $OfferName ="TestTenantSubscriptionOffer",
 
-        [String] $BasePlanName,
+        [String] $BasePlanName ="TestTenantSubscriptionPlan",
 
-        [String] $ResourceGroupName,
+        [String] $ResourceGroupName ="TestTenantSubscriptionRG",
 
         [ValidateSet("Public", "Private", "Decommissioned")]
         [String] $State = "Public",
@@ -39,20 +38,6 @@ function Test-TenantSubscription
         [Switch] $DoNotDelete
     )
 
-    if (!$OfferName)
-    {
-        $OfferName = "TestOffer-"  + [Guid]::NewGuid().ToString()
-    }
-
-    if (!$BasePlanName)
-    {
-        $BasePlanName = "TestPlan-"  + [Guid]::NewGuid().ToString()
-    }
-
-    if (!$ResourceGroupName)
-    {
-        $ResourceGroupName = "TestRG-" + [Guid]::NewGuid().ToString()
-    }
 
     New-ResourceGroup -ResourceGroupName $ResourceGroupName
 
@@ -67,17 +52,16 @@ function Test-TenantSubscription
     New-Offer -OfferName $offerName -BasePlan $plan -ResourceGroupName $ResourceGroupName
 
     $offer = Get-Offer -OfferName $offerName -ResourceGroupName $ResourceGroupName
-    # call made https://<>:30005/subscriptions/a0ebe67a-ac93-4cea-9275-cb4e7cc15b86/resourcegroups/TestRG-a4a39db7-89af-42ee-a865-3f50cab74fae/providers/Microsoft.Subscriptions/offers/TestOffer-426c1a72-125c-4ee1-a687-950781150e5f?api-version=1.0
-    # Offer ID returned by the previous call is id=/subscriptions/a0ebe67a-ac93-4cea-9275-cb4e7cc15b86/resourceGroups/TestRG-a4a39db7-89af-42ee-a865-3f50cab74fae/providers/Microsoft.Subscriptions/offers/TestOffer-426c1a72-125c-4ee1-a687-950781150e5f
 
     Assert-NotNull $offer
     Assert-True { $offer.Properties.DisplayName -eq  $offerName}
 
     Set-Offer -Offer $offer -ResourceGroup $ResourceGroupName -State "Public"
 
-    $publicOffer = Get-Offer -OfferName $offerName -Token $AzureStackConfig.Token
+    $publicOffer = Get-Offer -OfferName $offerName
 
-    $subscription = New-Subscription -SubscriptionUser $SubscriptionUser -OfferId $publicOffer.Id
+	[Microsoft.AzureStack.Commands.NewManagedSubscription]::SubscriptionIds.Enqueue("8E7DD69E-9AB2-44A1-94D8-F7BC8E12645E")
+    $subscription = New-Subscription -SubscriptionUser $SubscriptionUser -OfferId $publicOffer.Id -Managed
 
     Set-Offer -Offer $offer -ResourceGroup $ResourceGroupName -State $State
 
@@ -111,8 +95,7 @@ function Test-TenantSubscribeToOffer
 {
     param
     (
-        [Parameter(Mandatory=$true)]
-        [String] $SubscriptionUser,
+        [String] $SubscriptionUser="user@contoso.com",
 
         [Parameter(Mandatory=$true)]
         [String] $UserPassword,
@@ -182,9 +165,9 @@ function Test-Plan
     param
     (
         [Alias("Name")]
-        [String] $PlanName,
+        [String] $PlanName ="TestPlanPlan",
 
-        [String[]] $Services=@("Microsoft.Subscriptions","Microsoft.Sql"),
+        [String[]] $Services=@("Microsoft.Subscriptions"),
 
         [ValidateSet("Public", "Private", "Decommissioned")]
         [String] $State = "Public",
@@ -192,12 +175,7 @@ function Test-Plan
         [Switch] $DoNotDelete
     )
 
-    if (!$PlanName)
-    {
-        $PlanName = "TestPlan-"  + [Guid]::NewGuid().ToString()
-    }
-
-    $rgName = "TestRG-" + [Guid]::NewGuid().ToString()
+    $rgName = "TestPlanRG"
 
     New-ResourceGroup -ResourceGroupName $rgName
 
@@ -233,34 +211,19 @@ function Test-Offer
     param
     (
         [Alias("Name")]
-        [String] $OfferName,
+        [String] $OfferName ="TestOffer01",
 
-        [String] $BasePlanName,
+        [String] $BasePlanName ="TestBasePlan01",
 
-        [String] $ResourceGroupName,
+        [String] $ResourceGroupName ="TestRG01",
 
-        [String[]] $Services=@("Microsoft.Subscriptions","Microsoft.Sql"),
+        [String[]] $Services=@("Microsoft.Subscriptions"),
 
         [ValidateSet("Public", "Private", "Decommissioned")]
         [String] $State = "Public",
 
         [Switch] $DoNotDelete
     )
-
-    if (!$OfferName)
-    {
-        $OfferName = "TestOffer-"  + [Guid]::NewGuid().ToString()
-    }
-
-    if (!$BasePlanName)
-    {
-        $BasePlanName = "TestPlan-"  + [Guid]::NewGuid().ToString()
-    }
-
-    if (!$ResourceGroupName)
-    {
-        $ResourceGroupName = "TestRG-" + [Guid]::NewGuid().ToString()
-    }
 
     New-ResourceGroup -ResourceGroupName $ResourceGroupName
 
@@ -287,37 +250,28 @@ function Test-Offer
 
 <#
 .Synopsis
-    Creates an offer having public delegated offers. Creates a subscription for the user
+    Creates an offer having public delegated offers.
 .EXAMPLE
     This example creates and deletes a new plan and offer
-    Test-Offer
-.EXAMPLE
-    This example creates a offer named DefaultOffer, a plan named DefaultPlan and does not delete them
-    Test-Offer -Services @("Microsoft.Subscriptions") -OfferName DefaultOffer -BasePlanName DefaultPlan -DoNotDelete
-.NOTES
-     The function is called only after Ignore-SelfSignedCert and Set-AzureStackEnvironment with the correct parameters
+    Test-DelegatedOffer
 #>
 function Test-DelegatedOffer
 {
     param
     (
-        [Parameter(Mandatory=$true)]
-        [String] $SubscriptionUser,
-
-        [Parameter(Mandatory=$true)]
-        [String] $UserPassword,
+        [String] $SubscriptionUser ="user@contoso.com",
 
         [String[]] $Services=@("Microsoft.Subscriptions","Microsoft.Sql"),
 
         [Switch] $DoNotDelete
     )
 
-    $delegatedOfferName = "TestOfferDelegated-"  + [Guid]::NewGuid().ToString()
-    $delegatedPlanName = "TestPlanDelegated-"  + [Guid]::NewGuid().ToString()
-    $offerName = "TestOffer-"  + [Guid]::NewGuid().ToString()
-    $planName = "TestPlan-"  + [Guid]::NewGuid().ToString()
+    $delegatedOfferName = "TestOfferDelegated"
+    $delegatedPlanName = "TestPlanDelegated" 
+    $offerName = "TestUberOffer"
+    $planName = "TestUberPlan"  
 
-    $rgName = "TestRG-" + [Guid]::NewGuid().ToString()
+    $rgName = "TestDelegatedOfferRG" 
 
     New-ResourceGroup -ResourceGroupName $rgName
 
@@ -349,26 +303,8 @@ function Test-DelegatedOffer
     Assert-NotNull $offer
     Set-Offer -Offer $offer -ResourceGroup $rgName -State "Public"
 
-    $password = ConvertTo-SecureString $UserPassword -AsPlainText -Force
-    $credential = New-Object System.Management.Automation.PSCredential($SubscriptionUser, $password)
-
-    $token =  Get-EnvironmentSpecificToken -Credential $credential
-
-    # Check whether the plan created is visible for the tenant
-    $tenantOffer = Get-Offer -OfferName $offerName -Token $token
-    $subDisplayName = "$SubscriptionUser Test Subscription"
-
-    # Creating a subscription with Tenant Token
-    $subscription = New-Subscription -SubscriptionUser $SubscriptionUser -OfferId $tenantOffer.Id -Token $token
-
-    # Get the delegated offer, with the reseller token
-    $resellerViewOffer = Get-Offer -OfferName $delegatedOfferName -Token $token
-    Assert-NotNull $resellerViewOffer
-    Assert-True { $resellerViewOffer.DisplayName -eq $delegatedOfferName }
-
     if (!$DoNotDelete)
     {
-        Remove-Subscription -TargetSubscriptionId $subscription.SubscriptionId
         Remove-Offer -OfferName $delegatedOfferName -ResourceGroupName $rgName
         Remove-Plan -PlanName $delegatedPlanName -ResourceGroupName $rgName
         Remove-Offer -OfferName $OfferName -ResourceGroupName $rgName
@@ -380,24 +316,17 @@ function Test-DelegatedOffer
 <#
 .Synopsis
     Creates a new plan with Subscription service, then updates the Subscription service default quota
-.NOTES
-     The function is called only after Ignore-SelfSignedCert and Set-AzureStackEnvironment with the correct parameters
 #>
 function Test-UpdateSubscriptionServiceQuota
 {
-    param
-    (
-        [Switch] $AddDelegatedOffer
-    )
-
-    $sqlOfferName = "TestOfferSQL-"  + [Guid]::NewGuid().ToString()
-    $sqlPlanName = "TestPlanSQL-"  + [Guid]::NewGuid().ToString()
-    $resellerPlanName = "TestPlanReseller-" + [Guid]::NewGuid().ToString()
+    $sqlOfferName = "TestUpdateQuotaOffer"
+    $sqlPlanName = "TesUpdateQuotaPlan" 
+    $resellerPlanName = "TestUpdateQuotaPlanReseller" 
 
     $sqlServices= @("Microsoft.Sql")
     $subscriptionServices= @("Microsoft.Subscriptions")
 
-    $rgName = "TestRG-" + [Guid]::NewGuid().ToString()
+    $rgName = "TestUpdateQuotatRG"
 
     New-ResourceGroup -ResourceGroupName $rgName
 
@@ -439,8 +368,8 @@ function Test-UpdateSubscriptionServiceQuota
     # Add additional delegated offer to the subscription service for the existing reseller plan
     if ($AddDelegatedOffer)
     {
-        $sqlOfferName1 = "TestOfferSQL-"  + [Guid]::NewGuid().ToString()
-        $sqlPlanName1 = "TestPlanSQL-"  + [Guid]::NewGuid().ToString()
+        $sqlOfferName1 = "TestUpdateQuotaOffer"
+        $sqlPlanName1 = "TestUpdateQuotaPlan"
 
         New-Plan -PlanName $sqlPlanName1 -ResourceGroupName $rgName -Services $sqlServices
         $sqlPlan = Get-Plan -PlanName $sqlPlanName1 -ResourceGroupName $rgName
@@ -478,30 +407,18 @@ function Test-UpdateSubscriptionServiceQuota
 
 <#
 .Synopsis
-    Creates a new plan with Subscription service, then add a sql service to the plan
-.NOTES
-     The function is called only after Ignore-SelfSignedCert and Set-AzureStackEnvironment with the correct parameters
+    Creates a new plan with Subscription service, then updates the Subscription service default quota, then adds delegated offer
 #>
-function Test-AddServiceToPlan
+function Test-AddDelegatedOffer
 {
-    param
-    (
-        [Parameter(Mandatory=$true)]
-        [String] $SubscriptionUser,
-
-        [Parameter(Mandatory=$true)]
-        [String] $UserPassword
-    )
-
-    $sqlOfferName = "TestOfferSQL-"  + [Guid]::NewGuid().ToString()
-    $sqlPlanName = "TestPlanSQL-"  + [Guid]::NewGuid().ToString()
-    $resellerPlanName = "TestPlanReseller-" + [Guid]::NewGuid().ToString()
-    $resellerOfferName = "OfferReseller-" + [Guid]::NewGuid().ToString()
+    $sqlOfferName = "TestAddDelegatedOffer"
+    $sqlPlanName = "TesAddDelegatedPlan" 
+    $resellerPlanName = "TestAddDelegatedPlanReseller" 
 
     $sqlServices= @("Microsoft.Sql")
     $subscriptionServices= @("Microsoft.Subscriptions")
 
-    $rgName = "TestRG-" + [Guid]::NewGuid().ToString()
+    $rgName = "TestAddDelegatedRG"
 
     New-ResourceGroup -ResourceGroupName $rgName
 
@@ -522,43 +439,138 @@ function Test-AddServiceToPlan
     New-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName -Services $subscriptionServices -DelegatedOfferName @($sqlOfferName)
 
     $resellerplan = Get-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName
+
+    Assert-NotNull $resellerplan
+    Assert-True {$resellerplan.Properties.DisplayName -eq  $resellerPlanName}
+
+    $subscriptionsQutoas = $resellerplan.Properties.ServiceQuotas[0].QuotaSettings | ConvertFrom-Json
+    $subscriptionsQutoas.delegatedProviderQuotas[0].maximumDelegationDepth = 5
+    $subscriptionsQutoas.delegatedProviderQuotas[0].delegatedOffers[0].accessibilityState = "Private"
+
+    $resellerplan.Properties.ServiceQuotas[0].QuotaSettings = $subscriptionsQutoas | ConvertTo-Json -Depth 5
+
     Set-Plan -Plan $resellerplan -ResourceGroup $rgName -State "Public"
 
-    # Create a reseller Offer
-    New-Offer -OfferName $resellerOfferName -BasePlan $resellerplan -ResourceGroupName $rgName
+    $updatedResellerplan = Get-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName
+    $updatedSubscriptionsQutoas = $updatedResellerplan.Properties.ServiceQuotas[0].QuotaSettings | ConvertFrom-Json
 
-    $resellerOffer = Get-Offer -OfferName $resellerOfferName -ResourceGroupName $rgName
-    Assert-NotNull $resellerOffer
-    Set-Offer -Offer $resellerOffer -ResourceGroup $rgName -State "Public"
+    Assert-AreEqual -expected $updatedSubscriptionsQutoas.delegatedProviderQuotas[0].maximumDelegationDepth -actual $subscriptionsQutoas.delegatedProviderQuotas[0].maximumDelegationDepth
+    Assert-AreEqual -expected $updatedSubscriptionsQutoas.delegatedProviderQuotas[0].delegatedOffers[0].accessibilityState -actual $subscriptionsQutoas.delegatedProviderQuotas[0].delegatedOffers[0].accessibilityState
 
-    $password = ConvertTo-SecureString $UserPassword -AsPlainText -Force
-    $credential = New-Object System.Management.Automation.PSCredential($SubscriptionUser, $password)
+    $sqlOfferName1 = "TestAddDelegatedSqlOffer"
+    $sqlPlanName1 = "TestAddDelegatedSqlPlan"
 
-    $token =  Get-EnvironmentSpecificToken -Credential $credential
+    New-Plan -PlanName $sqlPlanName1 -ResourceGroupName $rgName -Services $sqlServices
+    $sqlPlan = Get-Plan -PlanName $sqlPlanName1 -ResourceGroupName $rgName
+    Set-Plan -Plan $sqlPlan -ResourceGroup $rgName -State "Public"
 
-    # Check whether the plan created is visible for the tenant
-    $tenantOffer = Get-Offer -OfferName $resellerOfferName -Token $token
-    $subDisplayName = "$SubscriptionUser Test Subscription"
+    New-Offer -OfferName $sqlOfferName1 -BasePlan $sqlPlan -ResourceGroupName $rgName
+    $sqlOffer = Get-Offer -OfferName $sqlOfferName1 -ResourceGroupName $rgName
+    Set-Offer -Offer $sqlOffer -ResourceGroup $rgName -State "Public"
 
-    # Creating a subscription with Tenant Token
-    $subscription = New-Subscription -SubscriptionUser $SubscriptionUser -OfferId $tenantOffer.Id -Token $token
+    $planQuota = $updatedResellerplan.Properties.ServiceQuotas[0].QuotaSettings | ConvertFrom-Json
+    $resellerQuotasObject = $updatedResellerplan.Properties.ServiceQuotas[0].QuotaSettings | ConvertFrom-Json
+    $resellerQuotasObject.delegatedProviderQuotas[0].delegatedOffers[0].offerName = $sqlOfferName1
 
-    # Add sql service to existing plan
-    $serviceQuotas = Get-ServiceQuotas  -rpServices $sqlServices -StrongTypedObject
-    $resellerplan.properties.ServiceQuotas.Add($serviceQuotas)
-    Set-Plan -Plan $resellerplan -ResourceGroup $rgName -State "Public"
+    $planQuota.delegatedProviderQuotas[0].delegatedOffers +=  $resellerQuotasObject.delegatedProviderQuotas[0].delegatedOffers[0]
 
-    $resellerplan = Get-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName
+    $updatedResellerplan.Properties.ServiceQuotas[0].QuotaSettings = $planQuota | ConvertTo-Json -Depth 5
 
-    Assert-AreEqual -expected "2" -actual $resellerplan.properties.ServiceQuotas.Count
+    Set-Plan -Plan  $updatedResellerplan -ResourceGroup $rgName -State "Public"
 
-    # Get the subscription after adding a sql service to the plan
-    $updatedSubscription = Get-Subscription -SubscriptionId $subscription.SubscriptionId
-    Assert-AreEqual -expected "2" -actual $updatedSubscription.ServiceQuotas.QuotaSettings.Count
+    $delegatedOfferAddedplan = Get-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName
+    $expectedQutoas = $delegatedOfferAddedplan.Properties.ServiceQuotas[0].QuotaSettings | ConvertFrom-Json
 
-    Remove-Subscription -TargetSubscriptionId $subscription.SubscriptionId
-    Remove-Offer -OfferName $resellerOfferName -ResourceGroupName $rgName
+    Assert-AreEqual -expected "2" -actual $expectedQutoas.delegatedProviderQuotas[0].delegatedOffers.Count
+
+    Remove-Offer -OfferName $sqlOfferName1 -ResourceGroupName $rgName
+    Remove-Plan -PlanName $sqlPlanName1 -ResourceGroupName $rgName
+
     Remove-Offer -OfferName $sqlOfferName -ResourceGroupName $rgName
     Remove-Plan -PlanName $sqlPlanName -ResourceGroupName $rgName
     Remove-Plan -PlanName $resellerPlanName -ResourceGroupName $rgName
+
+    Remove-ResourceGroup -ResourceGroupName $rgName
+}
+
+<#
+.Synopsis
+    Creates and Deletes a new ResourceGroup. 
+.EXAMPLE
+    This example creates and deletes a new resource group
+    Test-ResourceGroup
+#>
+function Test-ResourceGroup
+{
+    param
+    (
+        [String] $ResourceGroupName ="TestRG1",
+
+        [Switch] $DoNotDelete
+    )
+
+    New-AzureRmResourceGroup -Name $ResourceGroupName -Location "redmond"
+
+    $rg = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location "redmond"
+    Assert-NotNull $rg 
+
+    if (!$DoNotDelete)
+    {
+        Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
+    }
+ }
+
+
+ <#
+.Synopsis
+    Creates and Deletes a new ResourceGroup. 
+.EXAMPLE
+    This example creates and deletes a new resource group
+    Test-ResourceGroup
+#>
+ function Test-ManagedLocation
+{
+ param
+    (
+        [String] $Location="chicago"
+    )
+
+    $lattitude = 80.5
+    $longitude = -45.5
+
+    try
+    {
+        $loc = New-AzureRMManagedLocation -Name $Location -DisplayName $Location -Latitude 80.5 -Longitude -45.5
+
+        Assert-NotNull $loc
+        Assert-AreEqual $loc.Name $Location
+        Assert-AreEqual $loc.Latitude $lattitude
+        Assert-AreEqual $loc.Longitude $longitude
+        Assert-AreEqual $loc.DisplayName $Location
+
+        $loc2 = Get-AzureRMManagedLocation -Name $Location
+
+        Assert-AreEqual $loc2.Name $Location
+        Assert-AreEqual $loc2.Latitude $lattitude
+        Assert-AreEqual $loc2.Longitude $longitude
+        Assert-AreEqual $loc2.DisplayName $Location
+
+        $lattitude = 90.0 
+
+        $loc2.Latitude = $lattitude
+        $loc2 | Set-AzureRMManagedLocation
+
+
+        $loc3 = Get-AzureRMManagedLocation -Name $Location
+
+        Assert-AreEqual $loc3.Name $Location
+        Assert-AreEqual $loc3.Latitude $lattitude
+        Assert-AreEqual $loc3.Longitude $longitude
+        Assert-AreEqual $loc3.DisplayName $Location
+    }
+    finally
+    {
+        Remove-AzureRMManagedLocation -Name $Location
+        Assert-Throws {Get-AzureRMManagedLocation -Name $Location }
+    }
 }

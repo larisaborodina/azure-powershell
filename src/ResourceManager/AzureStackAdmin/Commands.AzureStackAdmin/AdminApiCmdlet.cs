@@ -192,7 +192,7 @@ namespace Microsoft.AzureStack.Commands
             var armUri = this.DefaultContext.Environment.GetEndpointAsUri(AzureEnvironment.Endpoint.ResourceManager);
             var credentials = AzureSession.AuthenticationFactory.GetSubscriptionCloudCredentials(this.DefaultContext);
 
-            return AzureSession.ClientFactory.CreateCustomClient<AzureStackClient>(armUri, credentials, this.ApiVersion);
+            return AzureSession.ClientFactory.CreateCustomClient<AzureStackClient>(credentials, armUri);
         }
     }
 }

@@ -75,14 +75,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.Azure.Management.Resources.2.18.14-preview\lib\net40\Microsoft.Azure.ResourceManager.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Azure.Test.Framework">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.Azure.Test.Framework.1.0.5799.28345-prerelease\lib\net45\Microsoft.Azure.Test.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Azure.Test.HttpRecorder">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.Azure.Test.HttpRecorder.1.0.5799.28345-prerelease\lib\net45\Microsoft.Azure.Test.HttpRecorder.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AzureStack.Management.Storage, Version=0.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Microsoft.AzureStack.Management.Storage.0.9.2-preview\lib\net45\Microsoft.AzureStack.Management.Storage.dll</HintPath>
@@ -147,17 +139,56 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AzStackAdminTestBase.cs" />
     <Compile Include="AzureStackTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\hydra-specs-pr\Test.Framework\HttpRecorder\HttpRecorder.csproj">
+      <Project>{9e5cb6e6-92af-464a-bd30-e848d94ed490}</Project>
+      <Name>HttpRecorder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\hydra-specs-pr\Test.Framework\Test.Framework.csproj">
+      <Project>{f144a258-3c38-447a-993e-967f74a1a76c}</Project>
+      <Name>Test.Framework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Commands.AzureStackAdmin.Test\Common\Commands.AzureStackAdmin.Test.Common.csproj">
       <Project>{fe34f78c-e6ec-448c-b675-df9d9201a4e7}</Project>
       <Name>Commands.AzureStackAdmin.Test.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AzureStackTests.ps1" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="AzureStackTests.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestAddDelegatedOffer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestDelegatedOffer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestManagedLocation.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestOffer.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestPlan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestResourceGroup.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestTenantSubscription.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestUpdateSubscriptionServiceQuota.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
