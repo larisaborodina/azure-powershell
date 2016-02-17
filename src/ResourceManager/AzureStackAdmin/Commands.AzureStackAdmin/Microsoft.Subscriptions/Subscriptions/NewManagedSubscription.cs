@@ -76,18 +76,17 @@ namespace Microsoft.AzureStack.Commands
         /// </summary>
         protected SubscriptionDefinition GetSubscriptionDefinition()
         {
-            // TODO: determine any extra properties which could / should be set
             return new SubscriptionDefinition()
-            {
-                SubscriptionId = NewManagedSubscription.SubscriptionIds.Count == 0 ? 
-                    Guid.NewGuid().ToString() : 
-                    NewManagedSubscription.SubscriptionIds.Dequeue().ToString(),
-                DisplayName = this.DisplayName,
-                OfferId = this.OfferId,
-                OfferName = GetAndValidateOfferName(this.OfferId),
-                Owner = this.Owner,
-                State = SubscriptionState.Enabled,
-            };
+                   {
+                       SubscriptionId = (NewManagedSubscription.SubscriptionIds.Count == 0
+                           ? Guid.NewGuid()
+                           : NewManagedSubscription.SubscriptionIds.Dequeue()).ToString(),
+                       DisplayName = this.DisplayName,
+                       OfferId = this.OfferId,
+                       OfferName = GetAndValidateOfferName(this.OfferId),
+                       Owner = this.Owner,
+                       State = SubscriptionState.Enabled,
+                   };
         }
 
         /// <summary>

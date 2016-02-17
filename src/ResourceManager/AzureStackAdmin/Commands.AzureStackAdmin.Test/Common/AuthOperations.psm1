@@ -44,9 +44,7 @@
     $adminSubscription = Get-AzureRmSubscription -SubscriptionName "Default Provider Subscription" 
     $adminSubscriptionId = $adminSubscription.SubscriptionId
     Set-AzureRmContext -SubscriptionId $adminSubscriptionId
-    
-	$locations = Get-AzureRMManagedLocation 
-    $location =  $locations[0].Name
+    $location =  "redmond"
 
     $global:AzureStackConfig = [PSCustomObject]@{
                     AzureStackMachineName = $AzureStackMachineName
@@ -166,11 +164,11 @@ function Get-DefaultLocation
     # TODO: always returning the first region, change if needed
     if ($Global:AzureStackConfig.IsAAD)
     {
-        $locations = Get-AzureRMManagedLocation -SubscriptionId $SubscriptionId
+        $locations = Get-AzureRMManagedLocation -SubscriptionId $SubscriptionId -ApiVersion "1.0"
     }
     else
     {
-        $locations = Get-AzureRMManagedLocation -SubscriptionId $SubscriptionId -Token $Token -AdminUri $AdminUri
+        $locations = Get-AzureRMManagedLocation -SubscriptionId $SubscriptionId -Token $Token -AdminUri $AdminUri -ApiVersion "1.0"
     }
     return $locations[0].Name
 }

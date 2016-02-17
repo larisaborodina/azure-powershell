@@ -117,6 +117,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.Test.Framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Azure.Test.Framework.1.0.5799.28345-prerelease\lib\net45\Microsoft.Azure.Test.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Test.HttpRecorder">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Azure.Test.HttpRecorder.1.0.5799.28345-prerelease\lib\net45\Microsoft.Azure.Test.HttpRecorder.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -144,25 +152,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\hydra-specs-pr\Test.Framework\HttpRecorder\HttpRecorder.csproj">
-      <Project>{9e5cb6e6-92af-464a-bd30-e848d94ed490}</Project>
-      <Name>HttpRecorder</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\hydra-specs-pr\Test.Framework\Test.Framework.csproj">
-      <Project>{f144a258-3c38-447a-993e-967f74a1a76c}</Project>
-      <Name>Test.Framework</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Commands.AzureStackAdmin.Test\Common\Commands.AzureStackAdmin.Test.Common.csproj">
       <Project>{fe34f78c-e6ec-448c-b675-df9d9201a4e7}</Project>
       <Name>Commands.AzureStackAdmin.Test.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="App.config" />
     <None Include="AzureStackTests.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Microsoft.SimpleVMTemplate.1.0.0.azpkg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestAddDelegatedOffer.json">
@@ -170,6 +171,9 @@
     </None>
     <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestDelegatedOffer.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestGalleryItem.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SessionRecords\Microsoft.AzureStack.Commands.Admin.Test.AzureStackTests\TestManagedLocation.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

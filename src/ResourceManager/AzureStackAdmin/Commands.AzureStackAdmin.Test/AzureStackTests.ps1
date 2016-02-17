@@ -1,4 +1,18 @@
-﻿<#
+﻿# ----------------------------------------------------------------------------------
+#
+# Copyright Microsoft Corporation
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------------
+
+<#
 .Synopsis
    Test the flow of Admin user creates a plan, offer and a tenant subscription for the specified user and deletes the created resources
    The plan and offer contains the Subscriptions and Sql services by default.
@@ -523,10 +537,10 @@ function Test-ResourceGroup
 
  <#
 .Synopsis
-    Creates and Deletes a new ResourceGroup. 
+    Creates and Deletes a new location. 
 .EXAMPLE
-    This example creates and deletes a new resource group
-    Test-ResourceGroup
+    This example creates and deletes a new location
+    Test-ManagedLocation
 #>
  function Test-ManagedLocation
 {
@@ -572,5 +586,34 @@ function Test-ResourceGroup
     {
         Remove-AzureRMManagedLocation -Name $Location
         Assert-Throws {Get-AzureRMManagedLocation -Name $Location }
+    }
+}
+
+
+ <#
+.Synopsis
+    Creates and Deletes a new GalleryItem. 
+#>
+function Test-GalleryItem
+{
+    $resourceGroupName = "GalleryItems"
+    $galleryItemName = "Microsoft.SimpleVMTemplate.1.0.0"
+    $galleryApiVersion = "2015-04-01"
+
+    try
+    {
+        New-AzureRmResourceGroup -Name $resourceGroupName  -Location redmond -Force
+		
+		[Microsoft.AzureStack.Commands.AddGalleryItem]::GalleryPackageIds.Enqueue("1988820c-2bcc-4682-9991-bec44e6b8324")
+        $galleryItem = Add-AzureRMGalleryItem -ResourceGroup $resourceGroupName  -Name $galleryItemName -Path "Microsoft.SimpleVMTemplate.1.0.0.azpkg"  -Apiversion $GalleryApiVersion  –Verbose
+        Assert-NotNull $galleryItem
+
+        $galleryItem  = Get-AzureRMGalleryItem -Name $galleryItemName -ResourceGroup  $resourceGroupName -ApiVersion $galleryApiVersion
+        Assert-AreEqual $galleryItem.Name $galleryItemName
+    }
+    finally
+    {
+        Remove-AzureRMGalleryItem -Name $GalleryItemName -ResourceGroup  $resourceGroupName -ApiVersion $galleryApiVersion
+		Remove-ResourceGroup -ResourceGroupName $resourceGroupName
     }
 }

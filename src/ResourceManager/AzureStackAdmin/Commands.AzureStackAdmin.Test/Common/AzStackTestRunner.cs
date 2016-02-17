@@ -1,16 +1,16 @@
-﻿//------------------------------------------------------------
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-//------------------------------------------------------------
-
-using Microsoft.Azure.Common.Authentication;
-using Microsoft.Azure.Gallery;
-using Microsoft.Azure.Management.Authorization;
-using Microsoft.Azure.Management.Resources;
-using Microsoft.Azure.Subscriptions;
-using Microsoft.Azure.Test;
-using Microsoft.AzureStack.Management;
-using Microsoft.WindowsAzure.Commands.Common.Test.Mocks;
-using Microsoft.WindowsAzure.Commands.ScenarioTest;
+﻿// ----------------------------------------------------------------------------------
+//
+// Copyright Microsoft Corporation
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ----------------------------------------------------------------------------------
 
 namespace Microsoft.AzureStack.Commands.Admin.Test.Common
 {
@@ -19,6 +19,15 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
     using System.Configuration;
     using System.Globalization;
     using System.Linq;
+    using Microsoft.Azure.Common.Authentication;
+    using Microsoft.Azure.Gallery;
+    using Microsoft.Azure.Management.Authorization;
+    using Microsoft.Azure.Management.Resources;
+    using Microsoft.Azure.Subscriptions;
+    using Microsoft.Azure.Test;
+    using Microsoft.AzureStack.Management;
+    using Microsoft.WindowsAzure.Commands.Common.Test.Mocks;
+    using Microsoft.WindowsAzure.Commands.ScenarioTest;
 
     public sealed class AzStackTestRunner
     {
@@ -28,26 +37,23 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
 
         public AzureStackClient azureStackClient;
 
-
         public ResourceManagementClient ResourceManagementClient { get; private set; }
 
         public SubscriptionClient SubscriptionClient { get; private set; }
 
         public GalleryClient GalleryClient { get; private set; }
 
-        ////public EventsClient EventsClient { get; private set; }
+        public string ApiVersion { get; set; }
 
         public AuthorizationManagementClient AuthorizationManagementClient { get; private set; }
-
 
         public static AzStackTestRunner NewInstance
         {
             get
             {
-                return new AzStackTestRunner();
+                return new AzStackTestRunner() {ApiVersion= "1.0"};
             }
         }
-
 
         public AzStackTestRunner()
         {
@@ -61,7 +67,7 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             bool aadEnvironement = Convert.ToBoolean(ReadAppSettings("AadEnvironment"), CultureInfo.InvariantCulture);
 
             // The modules are deployed to the test run directory with the test settings file
-            modules.Add(@"AssertResourceExistence.psm1");
+            modules.Add(@"AssertResources.psm1");
             modules.Add(@"GlobalVariables.psm1");
             modules.Add(@"AuthOperations.psm1");
             modules.Add(@"CommonOperations.psm1");
@@ -104,6 +110,11 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             {
                 setupAzureStackEnvironmentPs = "Set-AzureStackEnvironment -AzureStackMachineName " + azureStackMachine;
             }
+
+            scripts.Add(
+                string.Format(
+                "Import-Module -Force {0}",
+                @"F:\gh-bganapa\azure-powershell\src\Package\Debug\ResourceManager\AzureResourceManager\AzureRM.AzureStackAdmin\AzureRM.AzureStackAdmin.psd1"));
 
             // TODO: Remove Self Signed Cert when ready
             string selfSignedCertPs = "Ignore-SelfSignedCert";
@@ -205,10 +216,8 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
             SubscriptionClient = GetSubscriptionClient();
             GalleryClient = GetGalleryClient();
             AuthorizationManagementClient = this.GetAuthorizationManagementClient();
-            ////var eventsClient = GetEventsClient();
-            //NetworkManagementClient = this.GetNetworkManagementClientClient(context);
 
-            azureStackClient = TestBase.GetServiceClient<AzureStackClient>(this.armTestEnvironmentFactory);
+            azureStackClient = TestBase.GetServiceClient<AzureStackClient>(this.armTestEnvironmentFactory, this.ApiVersion);
 
             this.SetupManagementClients(ResourceManagementClient, SubscriptionClient, GalleryClient, AuthorizationManagementClient, azureStackClient);
         }

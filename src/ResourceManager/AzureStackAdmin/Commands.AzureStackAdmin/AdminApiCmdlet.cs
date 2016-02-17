@@ -168,13 +168,15 @@ namespace Microsoft.AzureStack.Commands
             {
                 return new AzureStackClient(
                     baseUri: this.AdminUri,
-                    credentials: new TokenCloudCredentials(token: this.Token));
+                    credentials: new TokenCloudCredentials(token: this.Token), 
+                    apiVersion: this.ApiVersion);
             }
             else
             {
                 return new AzureStackClient(
                     baseUri: this.AdminUri,
-                    credentials: new TokenCloudCredentials(subscriptionId: subscriptionId, token: this.Token));
+                    credentials: new TokenCloudCredentials(subscriptionId: subscriptionId, token: this.Token),
+                    apiVersion: this.ApiVersion);
             }
         }
 
@@ -192,7 +194,7 @@ namespace Microsoft.AzureStack.Commands
             var armUri = this.DefaultContext.Environment.GetEndpointAsUri(AzureEnvironment.Endpoint.ResourceManager);
             var credentials = AzureSession.AuthenticationFactory.GetSubscriptionCloudCredentials(this.DefaultContext);
 
-            return AzureSession.ClientFactory.CreateCustomClient<AzureStackClient>(credentials, armUri);
+            return AzureSession.ClientFactory.CreateCustomClient<AzureStackClient>(armUri, credentials, this.ApiVersion);
         }
     }
 }
