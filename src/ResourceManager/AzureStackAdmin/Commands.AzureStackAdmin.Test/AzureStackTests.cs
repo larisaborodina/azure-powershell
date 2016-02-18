@@ -16,6 +16,7 @@ namespace Microsoft.AzureStack.Commands.Admin.Test
 {
     using Microsoft.AzureStack.Commands.Admin.Test.Common;
     using Xunit;
+    using Microsoft.WindowsAzure.Commands.ScenarioTest;
 
     /// <summary>
     /// The filename and the class name is expected to be same
@@ -24,54 +25,63 @@ namespace Microsoft.AzureStack.Commands.Admin.Test
     public class AzureStackTests
     {
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestResourceGroup()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-ResourceGroup");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestPlan()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-Plan");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestOffer()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-Offer");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestTenantSubscription()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-TenantSubscription");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestDelegatedOffer()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-DelegatedOffer");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestUpdateSubscriptionServiceQuota()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-UpdateSubscriptionServiceQuota");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestAddDelegatedOffer()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-AddDelegatedOffer");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestManagedLocation()
         {
             AzStackTestRunner.NewInstance.RunPsTest("Test-ManagedLocation");
         }
 
         [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestGalleryItem()
         {
             var testRunner = AzStackTestRunner.NewInstance;

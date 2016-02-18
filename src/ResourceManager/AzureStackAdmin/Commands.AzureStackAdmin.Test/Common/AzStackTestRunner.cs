@@ -12,6 +12,8 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using Microsoft.Azure.Commands.Common.Authentication;
+
 namespace Microsoft.AzureStack.Commands.Admin.Test.Common
 {
     using System;
@@ -19,7 +21,6 @@ namespace Microsoft.AzureStack.Commands.Admin.Test.Common
     using System.Configuration;
     using System.Globalization;
     using System.Linq;
-    using Microsoft.Azure.Common.Authentication;
     using Microsoft.Azure.Gallery;
     using Microsoft.Azure.Management.Authorization;
     using Microsoft.Azure.Management.Resources;
