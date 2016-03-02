@@ -86,7 +86,7 @@ namespace Microsoft.AzureStack.Commands
             {
                 JObject.Parse(value);
             }
-            catch (Exception ex)
+            catch
             {
                 throw new ArgumentException(Resources.InvalidJson, paramName: paramName);
             }

@@ -64,7 +64,7 @@ namespace Microsoft.AzureStack.Commands
                         ProviderRegistration = this.ProviderRegistration
                     };  
 
-                this.WriteVerbose(Resources.AddingResourceProviderRegistration.FormatArgs(parameters.ProviderRegistration.Properties.Name));
+                this.WriteVerbose(Resources.AddingResourceProviderRegistration.FormatArgs(parameters.ProviderRegistration.Properties.DisplayName));
 
                 this.ValidatePrerequisites(client, parameters);
 
@@ -89,15 +89,15 @@ namespace Microsoft.AzureStack.Commands
                 throw new PSInvalidOperationException(Resources.ResourceGroupDoesNotExist.FormatArgs(this.ResourceGroup));
             }
 
-            var name = parameters.ProviderRegistration.Properties.Name;
-            var location = parameters.ProviderRegistration.Properties.Location;
+            var providerNamespace = parameters.ProviderRegistration.Properties.Namespace;
+            var location = parameters.ProviderRegistration.Properties.ProviderLocation;
 
             if (!client.ProviderRegistrations.List(this.ResourceGroup).ProviderRegistrations
                 .Any(p =>
-                    string.Equals(p.Properties.Manifest.Namespace, name, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(p.Properties.Location, location, StringComparison.OrdinalIgnoreCase)))
+                    string.Equals(p.Properties.Namespace, providerNamespace, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(p.Properties.ProviderLocation, location, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new PSInvalidOperationException(Resources.ProviderRegistrationDoesNotExist.FormatArgs(name, location));
+                throw new PSInvalidOperationException(Resources.ProviderRegistrationDoesNotExist.FormatArgs(providerNamespace, location));
             }
         }
     }

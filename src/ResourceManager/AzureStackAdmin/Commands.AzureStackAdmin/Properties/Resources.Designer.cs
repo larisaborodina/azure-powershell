@@ -367,7 +367,7 @@ namespace Microsoft.AzureStack.Commands {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A resource provider registration with name &quot;{0}&quot; and region &quot;{1}&quot; already exists..
+        ///   Looks up a localized string similar to A resource provider registration with namespace &quot;{0}&quot; and region &quot;{1}&quot; already exists..
         /// </summary>
         public static string ProviderRegistrationAlreadyExists {
             get {
@@ -376,7 +376,7 @@ namespace Microsoft.AzureStack.Commands {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A resource provider registration with name &quot;{0}&quot; and region &quot;{1}&quot; does not exist..
+        ///   Looks up a localized string similar to A resource provider registration with namespace &quot;{0}&quot; and region &quot;{1}&quot; does not exist..
         /// </summary>
         public static string ProviderRegistrationDoesNotExist {
             get {

@@ -15,7 +15,7 @@
 namespace Microsoft.AzureStack.Commands
 {
     using System;
-    using System.IO;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
     using Microsoft.WindowsAzure.Commands.Common;
@@ -26,18 +26,10 @@ namespace Microsoft.AzureStack.Commands
     /// <summary>
     /// Add Resource Provider Registration Cmdlet
     /// </summary>
-    [Cmdlet(VerbsCommon.Set, Nouns.ResourceProviderRegistration, DefaultParameterSetName = "ByManifest")]
+    [Cmdlet(VerbsCommon.Add, Nouns.ResourceProviderRegistration, DefaultParameterSetName = "ByManifest")]
     [OutputType(typeof(ProviderRegistrationModel))]
     public class AddResourceProviderRegistration : AdminApiCmdlet
     {
-        /// <summary>
-        /// Gets or sets the resource provider registration name.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
-        [ValidateLength(1, 128)]
-        [ValidateNotNull]
-        public string Name { get; set; }
-
         /// <summary>
         /// Gets or sets the namespace of the resource provider.
         /// </summary>
@@ -88,7 +80,29 @@ namespace Microsoft.AzureStack.Commands
         [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
         [Parameter(Mandatory = true, ParameterSetName = "ByEndpoint")]
         [ValidateNotNull]
-        public string Location { get; set; }
+        public string ProviderLocation { get; set; }
+
+        /// <summary>
+        /// Optional. Gets or sets the name of the extension.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
+        [ValidateNotNull]
+        public string ExtensionName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the extension endpoint.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
+        [ValidateAbsoluteUri]
+        [ValidateNotNull]
+        public Uri ExtensionUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource type json string.
+        /// </summary>
+        [ValidateNotNull]
+        [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
+        public string ResourceTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the resource provider registration manifest endpoint.
@@ -103,22 +117,15 @@ namespace Microsoft.AzureStack.Commands
         /// </summary>
         [Parameter(ParameterSetName = "ByEndpoint")]
         [ValidateNotNull]
-        public string UserName { get; set; }
+        public string ManifestEndpointUserName { get; set; }
 
         /// <summary>
         /// Gets or sets the resource provider registration password.
         /// </summary>
         [Parameter(ParameterSetName = "ByEndpoint")]
         [ValidateNotNull]
-        public string Password { get; set; }
+        public string ManifestEndpointPassword { get; set; }
 
-        /// <summary>
-        /// Gets or sets the json string of the resource provider regional manifest. 
-        /// This is a json file
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "ByManifest")]
-        [ValidateNotNull]
-        public string RegionalManifest { get; set; }
 
         /// <summary>
         /// Executes the API call(s) against Azure Resource Management API(s).
@@ -136,20 +143,19 @@ namespace Microsoft.AzureStack.Commands
                     {
                         ProviderRegistration = new ProviderRegistrationModel()
                         {
-                            Name = this.Name,
+                            Name = this.DisplayName,
                             Location = this.ArmLocation,
                             Properties = new ProviderRegistrationPropertiesDefinition()
                                 {
                                     DisplayName = this.DisplayName,
-                                    Name = this.Name,
                                     Namespace = this.Namespace,
                                     Enabled = true,
-                                    Location = this.Location,
+                                    ProviderLocation = this.ProviderLocation,
                                     ManifestEndpoint = new ResourceProviderEndpoint()
                                         {
                                             EndpointUri = this.ManifestEndpoint.AbsoluteUri,
-                                            AuthenticationUsername = this.UserName,
-                                            AuthenticationPassword = this.Password
+                                            AuthenticationUsername = this.ManifestEndpointUserName,
+                                            AuthenticationPassword = this.ManifestEndpointPassword
                                         }
                                 }
                         }
@@ -157,27 +163,28 @@ namespace Microsoft.AzureStack.Commands
                 }
                 else
                 {
-                    ArgumentValidator.ValidateJson("RegionalManifest", this.RegionalManifest);
+                    ArgumentValidator.ValidateJson("ResourceTypes", this.ResourceTypes);
                     registrationParams = new ProviderRegistrationCreateOrUpdateParameters()
                     {
                         ProviderRegistration = new ProviderRegistrationModel()
                         {
-                            Name = this.Name,
+                            Name = this.DisplayName,
                             Location = this.ArmLocation,
                             Properties = new ProviderRegistrationPropertiesDefinition()
                             {
                                 DisplayName = this.DisplayName,
-                                Name = this.Name,
                                 Namespace = this.Namespace,
                                 Enabled = true,
-                                Location = this.Location,
-                                Manifest = JsonConvert.DeserializeObject<RegionalManifest>(this.RegionalManifest)
+                                ProviderLocation = this.ProviderLocation,
+                                ExtensionName = this.ExtensionName,
+                                ExtensionUri = this.ExtensionUri.AbsoluteUri,
+                                ResourceTypes = JsonConvert.DeserializeObject<List<ResourceType>>(this.ResourceTypes)
                             }
                         }
                     };
                 }
 
-                this.WriteVerbose(Resources.AddingResourceProviderRegistration.FormatArgs(registrationParams.ProviderRegistration.Properties.Name));
+                this.WriteVerbose(Resources.AddingResourceProviderRegistration.FormatArgs(registrationParams.ProviderRegistration.Properties.DisplayName));
 
                 this.ValidatePrerequisites(client, registrationParams);
 
@@ -202,15 +209,15 @@ namespace Microsoft.AzureStack.Commands
                 throw new PSInvalidOperationException(Resources.ResourceGroupDoesNotExist.FormatArgs(this.ResourceGroup));
             }
 
-            var name = parameters.ProviderRegistration.Properties.Name;
-            var location = parameters.ProviderRegistration.Properties.Location;
+            var providerNamespace = parameters.ProviderRegistration.Properties.Namespace;
+            var location = parameters.ProviderRegistration.Properties.ProviderLocation;
 
             if (client.ProviderRegistrations.List(this.ResourceGroup).ProviderRegistrations
                 .Any(p =>
-                    string.Equals(p.Properties.Manifest.Namespace, name, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(p.Properties.Location, location, StringComparison.OrdinalIgnoreCase)))
+                    string.Equals(p.Properties.Namespace, providerNamespace, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(p.Properties.ProviderLocation, location, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new PSInvalidOperationException(Resources.ProviderRegistrationAlreadyExists.FormatArgs(name, location));
+                throw new PSInvalidOperationException(Resources.ProviderRegistrationAlreadyExists.FormatArgs(providerNamespace, location));
             }
         }
     }
