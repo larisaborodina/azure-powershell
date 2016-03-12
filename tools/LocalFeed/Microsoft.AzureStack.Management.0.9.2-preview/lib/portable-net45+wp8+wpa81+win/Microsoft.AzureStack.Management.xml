@@ -5621,6 +5621,58 @@
             Optional. The number of subscriptions associated with the plan
             </summary>
         </member>
+        <member name="T:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition">
+            <summary>
+            The subscription definition object.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.#ctor">
+            <summary>
+            Initializes a new instance of the AdminSubscriptionDefinition class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.DisplayName">
+            <summary>
+            Optional. Gets or sets the subscription name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.ExternalReferenceId">
+            <summary>
+            Optional. Gets or sets the external reference identifier.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.Id">
+            <summary>
+            Optional. Gets or sets the fully qualified identifier
+            (/subscriptions/{subscriptionId}).
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.OfferId">
+            <summary>
+            Optional. Gets or sets the identifier of the offer under the scope
+            of a delegated provider.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.Owner">
+            <summary>
+            Optional. Gets or sets the subscription owner.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.State">
+            <summary>
+            Optional. Gets or sets the subscription state.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.SubscriptionId">
+            <summary>
+            Optional. Gets or sets the subscription Guid string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition.TenantId">
+            <summary>
+            Optional. ets or sets the directory tenant identifier.
+            </summary>
+        </member>
         <member name="T:Microsoft.AzureStack.Management.Models.CloudCreateOrUpdateParameters">
             <summary>
             Your documentation here.
@@ -6874,7 +6926,7 @@
             ManagedSubscriptionCreateOrUpdateParameters class.
             </summary>
         </member>
-        <member name="M:Microsoft.AzureStack.Management.Models.ManagedSubscriptionCreateOrUpdateParameters.#ctor(Microsoft.AzureStack.Management.Models.SubscriptionDefinition)">
+        <member name="M:Microsoft.AzureStack.Management.Models.ManagedSubscriptionCreateOrUpdateParameters.#ctor(Microsoft.AzureStack.Management.Models.AdminSubscriptionDefinition)">
             <summary>
             Initializes a new instance of the
             ManagedSubscriptionCreateOrUpdateParameters class with required
@@ -6943,6 +6995,70 @@
         <member name="P:Microsoft.AzureStack.Management.Models.ManagedSubscriptionListResult.Subscriptions">
             <summary>
             Optional. Your documentation here.
+            </summary>
+        </member>
+        <member name="T:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition">
+            <summary>
+            The resource provider registration definition.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.#ctor">
+            <summary>
+            Initializes a new instance of the ManifestPropertiesDefinition
+            class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.DisplayName">
+            <summary>
+            Optional. Gets or sets the display name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.Enabled">
+            <summary>
+            Optional. Gets or sets a value indicating whether this resource
+            provider is enabled.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ExtensionName">
+            <summary>
+            Optional. Gets or sets the name of the extension.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ExtensionUri">
+            <summary>
+            Optional. Gets or sets the extension endpoint.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ManifestEndpoint">
+            <summary>
+            Optional. Gets or sets the manifest endpoint.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.Namespace">
+            <summary>
+            Optional. Gets or sets the namespace.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ProviderAuthorization">
+            <summary>
+            Optional. This configuration advertises to ARM that the resource
+            provider requires RBAC access on tenant subscriptions to perform
+            operations on their behalf.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ProviderLocation">
+            <summary>
+            Optional. Gets or sets the location.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ProvisioningState">
+            <summary>
+            Optional. Gets or sets the provisioning state.
+            </summary>
+        </member>
+        <member name="P:Microsoft.AzureStack.Management.Models.ManifestPropertiesDefinition.ResourceTypes">
+            <summary>
+            Optional. Gets or sets the resource types.
             </summary>
         </member>
         <member name="T:Microsoft.AzureStack.Management.Models.MarketplaceType">
@@ -7467,70 +7583,6 @@
         <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationModel.Properties">
             <summary>
             Optional. Your documentation here.
-            </summary>
-        </member>
-        <member name="T:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition">
-            <summary>
-            The resource provider registration definition.
-            </summary>
-        </member>
-        <member name="M:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.#ctor">
-            <summary>
-            Initializes a new instance of the
-            ProviderRegistrationPropertiesDefinition class.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.DisplayName">
-            <summary>
-            Optional. Gets or sets the display name.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.Enabled">
-            <summary>
-            Optional. Gets or sets a value indicating whether this resource
-            provider is enabled.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ExtensionName">
-            <summary>
-            Optional. Gets or sets the name of the extension.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ExtensionUri">
-            <summary>
-            Optional. Gets or sets the extension endpoint.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ManifestEndpoint">
-            <summary>
-            Optional. Gets or sets the manifest endpoint.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.Namespace">
-            <summary>
-            Optional. Gets or sets the namespace.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ProviderAuthorization">
-            <summary>
-            Optional. This configuration advertises to ARM that the resource
-            provider requires RBAC access on tenant subscriptions to perform
-            operations on their behalf.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ProviderLocation">
-            <summary>
-            Optional. Gets or sets the location.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ProvisioningState">
-            <summary>
-            Optional. Gets or sets the provisioning state.
-            </summary>
-        </member>
-        <member name="P:Microsoft.AzureStack.Management.Models.ProviderRegistrationPropertiesDefinition.ResourceTypes">
-            <summary>
-            Optional. Gets or sets the resource types.
             </summary>
         </member>
         <member name="T:Microsoft.AzureStack.Management.Models.ProviderRegistrationValidateParameters">
